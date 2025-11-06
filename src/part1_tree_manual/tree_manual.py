@@ -1,3 +1,164 @@
+# Código responsável por modularizar a estrutura de uma árvore de decisão;
+import matplotlib.pyplot as plt
+import networkx as nx
+from collections import deque
+
+class Tree:
+    """
+    Classe que representa um nó de uma árvore de decisão binária;
+    Adotando 'Não' como direito e 'Sim' como esquerdo;
+    """
+    def __init__(self, value=None):
+        self.value = value
+        self.left = None
+        self.right = None
+    def add_left(self, value):
+        """Adiciona um filho à esquerda (Sim)"""
+        if isinstance(value, Tree):
+            self.left = value
+        else:
+            self.left = Tree(value)
+        return self.left
+    def add_right(self, value):
+        """Adiciona um filho à direita (Não)"""
+        if isinstance(value, Tree):
+            self.right = value
+        else:
+            self.right = Tree(value)
+        return self.right
+    def is_leaf(self):
+        """Verifica se o nó é uma folha (não tem filhos)"""
+        return (self.left is None and self.right is None)
+    def sim(self):
+        """Retorna o filho esquerdo (Sim)"""
+        return self.left
+    def nao(self):
+        """Retorna o filho direito (Não)"""
+        return self.right
+    def from_list(nodes):
+        """
+        Cria uma árvore a partir de uma lista em ordem de largura (BFS).
+        None representa ausência de nó.
+        
+        Exemplo:
+            nodes = ["Raiz", "Sim1", "Não1", "Sim2", None, "Não2", None]
+            Cria:
+                    Raiz
+                   /    \
+                Sim1    Não1
+                /         \
+              Sim2        Não2
+        """
+        if not nodes or nodes[0] is None:
+            return None
+        root = Tree(nodes[0])
+        queue = deque([root])
+        i = 1
+        while queue and i < len(nodes):
+            current = queue.popleft()
+            # Adicionando filho esquerdo (Sim)
+            if i < len(nodes) and nodes[i] is not None:
+                current.left = Tree(nodes[i])
+                queue.append(current.left)
+            i += 1
+            # Adicionando filho direito (Não)
+            if i < len(nodes) and nodes[i] is not None:
+                current.right = Tree(nodes[i])
+                queue.append(current.right)
+            i += 1
+        return root
+    def to_list(self):
+        """
+        Converte a árvore para uma lista em ordem de largura (BFS);
+        Inclui None para posições vazias;
+        Precisa salvar/restaurar a estrutura exata da árvore.
+        """
+        if not self.value:
+            return []
+        result = []
+        queue = deque([self])
+        while queue:
+            current = queue.popleft()
+            if current:
+                result.append(current.value)
+                queue.append(current.left)
+                queue.append(current.right)
+            else:
+                result.append(None)
+        # Remove None's do final
+        while result and result[-1] is None:
+            result.pop()
+        return result
+    def traverse_bfs(self):
+        """
+        Retorna lista de valores em ordem de largura (BFS);
+        Precisa apenas listar/processar os nós existentes;
+        """
+        if not self.value:
+            return []
+        result = []
+        queue = deque([self])
+        while queue:
+            current = queue.popleft()
+            result.append(current.value)
+            if current.left:
+                queue.append(current.left)
+            if current.right:
+                queue.append(current.right)
+        return result
+    def traverse_dfs_preorder(self):
+        """
+        Retorna lista de valores em pré-ordem (DFS)
+        """
+        result = []
+        if self.value:
+            result.append(self.value)
+            if self.left:
+                result.extend(self.left.traverse_dfs_preorder())
+            if self.right:
+                result.extend(self.right.traverse_dfs_preorder())
+        return result
+    def get_height(self):
+        """
+        Retorna a altura da árvore
+        """
+        if self.is_leaf():
+            return 0
+        left_height = self.left.get_height() if self.left else 0
+        right_height = self.right.get_height() if self.right else 0
+        return 1 + max(left_height, right_height)
+    def get_node_count(self):
+        """
+        Retorna o número total de nós
+        """
+        count = 1
+        if self.left:
+            count += self.left.get_node_count()
+        if self.right:
+            count += self.right.get_node_count()
+        return count
+    def find_node(self, value):
+        """
+        Busca um nó pelo valor (BFS)
+        """
+        queue = deque([self])
+        while queue:
+            current = queue.popleft()
+            if current.value == value:
+                return current
+            if current.left:
+                queue.append(current.left)
+            if current.right:
+                queue.append(current.right)
+        return None
+    def __str__(self):
+        """
+        Representação em string da árvore
+        """
+        return f"Árvore(valores={self.value}, altura={self.get_height()}, nós={self.get_node_count()})"
+    def __repr__(self):
+        return self.__str__()
+    
 """
 Exemplo de Árvore de Decisão Filosófica
 =================================================
@@ -17,9 +178,6 @@ Correntes filosóficas abordadas:
 =================================================
 Outra Árvore com 6 níveis de profundidade e 32 correntes filosóficas possíveis.
 """
-
-from tree import Tree
-from tree_visualization_extended import visualize_with_categories
 
 # Dicionário com recomendações de livros para cada corrente filosófica
 LIVROS_RECOMENDADOS = {
@@ -453,24 +611,6 @@ def fazer_questionario_interativo(arvore):
     return nodo_atual.value
 
 
-def mostrar_arvore_completa(arvore):
-    """
-    Mostra a visualização gráfica completa da árvore de decisão com cores por categoria.
-    Nós exibem apenas o início dos textos para melhor legibilidade.
-    """
-    print("\nGerando visualizacao grafica da arvore de decisao...\n")
-    print("NOTA: Os nos mostram apenas o inicio do texto para facilitar visualizacao.")
-    print("      O texto completo aparece ao finalizar o questionario.\n")
-    
-    visualize_with_categories(
-        arvore,
-        title="Arvore de Decisao Filosofica - 32 Correntes (Colorido por Area)",
-        figsize=(30, 18),
-        max_char_per_line=20,  # Textos curtos e diretos
-        show_legend=True,
-        show_explanation=True
-    )
-
 
 def mostrar_info_arvore(arvore):
     """
@@ -565,24 +705,21 @@ def menu_principal():
         print("5. Ver explicacao da hierarquia de perguntas")
         print("6. Sair")
         
-        escolha = input("\n>>> Escolha uma opcao (1-6): ").strip()
+        escolha = input("\n>>> Escolha uma opcao (1-5): ").strip()
         
         if escolha == '1':
             fazer_questionario_interativo(arvore)
             input("\nPressione ENTER para continuar...")
         elif escolha == '2':
-            mostrar_arvore_completa(arvore)
-            input("\nPressione ENTER para continuar...")
-        elif escolha == '3':
             mostrar_info_arvore(arvore)
             input("\nPressione ENTER para continuar...")
-        elif escolha == '4':
+        elif escolha == '3':
             mostrar_estatisticas_detalhadas(arvore)
             input("\nPressione ENTER para continuar...")
-        elif escolha == '5':
+        elif escolha == '4':
             print(EXPLICACAO_ESTRUTURA)
             input("\nPressione ENTER para continuar...")
-        elif escolha == '6':
+        elif escolha == '5':
             print("\nObrigado por usar o sistema! Ate logo!\n")
             break
         else:
