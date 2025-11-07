@@ -1,6 +1,4 @@
 # Código responsável por modularizar a estrutura de uma árvore de decisão;
-import matplotlib.pyplot as plt
-import networkx as nx
 from collections import deque
 
 class Tree:
