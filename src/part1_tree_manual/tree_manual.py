@@ -1,183 +1,6 @@
-# Código responsável por modularizar a estrutura de uma árvore de decisão;
 from collections import deque
-
-class Tree:
-    """
-    Classe que representa um nó de uma árvore de decisão binária;
-    Adotando 'Não' como direito e 'Sim' como esquerdo;
-    """
-    def __init__(self, value=None):
-        self.value = value
-        self.left = None
-        self.right = None
-    def add_left(self, value):
-        """Adiciona um filho à esquerda (Sim)"""
-        if isinstance(value, Tree):
-            self.left = value
-        else:
-            self.left = Tree(value)
-        return self.left
-    def add_right(self, value):
-        """Adiciona um filho à direita (Não)"""
-        if isinstance(value, Tree):
-            self.right = value
-        else:
-            self.right = Tree(value)
-        return self.right
-    def is_leaf(self):
-        """Verifica se o nó é uma folha (não tem filhos)"""
-        return (self.left is None and self.right is None)
-    def sim(self):
-        """Retorna o filho esquerdo (Sim)"""
-        return self.left
-    def nao(self):
-        """Retorna o filho direito (Não)"""
-        return self.right
-    def from_list(nodes):
-        """
-        Cria uma árvore a partir de uma lista em ordem de largura (BFS).
-        None representa ausência de nó.
-        
-        Exemplo:
-            nodes = ["Raiz", "Sim1", "Não1", "Sim2", None, "Não2", None]
-            Cria:
-                    Raiz
-                   /    \
-                Sim1    Não1
-                /         \
-              Sim2        Não2
-        """
-        if not nodes or nodes[0] is None:
-            return None
-        root = Tree(nodes[0])
-        queue = deque([root])
-        i = 1
-        while queue and i < len(nodes):
-            current = queue.popleft()
-            # Adicionando filho esquerdo (Sim)
-            if i < len(nodes) and nodes[i] is not None:
-                current.left = Tree(nodes[i])
-                queue.append(current.left)
-            i += 1
-            # Adicionando filho direito (Não)
-            if i < len(nodes) and nodes[i] is not None:
-                current.right = Tree(nodes[i])
-                queue.append(current.right)
-            i += 1
-        return root
-    def to_list(self):
-        """
-        Converte a árvore para uma lista em ordem de largura (BFS);
-        Inclui None para posições vazias;
-        Precisa salvar/restaurar a estrutura exata da árvore.
-        """
-        if not self.value:
-            return []
-        result = []
-        queue = deque([self])
-        while queue:
-            current = queue.popleft()
-            if current:
-                result.append(current.value)
-                queue.append(current.left)
-                queue.append(current.right)
-            else:
-                result.append(None)
-        # Remove None's do final
-        while result and result[-1] is None:
-            result.pop()
-        return result
-    def traverse_bfs(self):
-        """
-        Retorna lista de valores em ordem de largura (BFS);
-        Precisa apenas listar/processar os nós existentes;
-        """
-        if not self.value:
-            return []
-        result = []
-        queue = deque([self])
-        while queue:
-            current = queue.popleft()
-            result.append(current.value)
-            if current.left:
-                queue.append(current.left)
-            if current.right:
-                queue.append(current.right)
-        return result
-    def traverse_dfs_preorder(self):
-        """
-        Retorna lista de valores em pré-ordem (DFS)
-        """
-        result = []
-        if self.value:
-            result.append(self.value)
-            if self.left:
-                result.extend(self.left.traverse_dfs_preorder())
-            if self.right:
-                result.extend(self.right.traverse_dfs_preorder())
-        return result
-    def get_height(self):
-        """
-        Retorna a altura da árvore
-        """
-        if self.is_leaf():
-            return 0
-        left_height = self.left.get_height() if self.left else 0
-        right_height = self.right.get_height() if self.right else 0
-        return 1 + max(left_height, right_height)
-    def get_node_count(self):
-        """
-        Retorna o número total de nós
-        """
-        count = 1
-        if self.left:
-            count += self.left.get_node_count()
-        if self.right:
-            count += self.right.get_node_count()
-        return count
-    def find_node(self, value):
-        """
-        Busca um nó pelo valor (BFS)
-        """
-        queue = deque([self])
-        while queue:
-            current = queue.popleft()
-            if current.value == value:
-                return current
-            if current.left:
-                queue.append(current.left)
-            if current.right:
-                queue.append(current.right)
-        return None
-    def __str__(self):
-        """
-        Representação em string da árvore
-        """
-        return f"Árvore(valores={self.value}, altura={self.get_height()}, nós={self.get_node_count()})"
-    def __repr__(self):
-        return self.__str__()
     
-"""
-Exemplo de Árvore de Decisão Filosófica
-=================================================
-Este exemplo utiliza o módulo tree.py para criar uma árvore de decisão interativa
-que identifica qual corrente filosófica melhor se alinha com suas respostas.
-=================================================
-Árvore com 6 níveis de profundidade e 32 correntes filosóficas possíveis.
-Correntes filosóficas abordadas:
-- Racionalismo Platônico, Racionalismo Cartesiano, Racionalismo Spinozista, Racionalismo Leibniziano
-- Empirismo Lockeano, Empirismo Humeano, Empirismo Berkeleyano, Positivismo Lógico
-- Pragmatismo Clássico, Pragmatismo Instrumentalista, Neopragmatismo, Pragmatismo Radical
-- Humanismo Secular, Humanismo Renascentista, Humanismo Cívico, Humanismo Existencial
-- Existencialismo Sartreano, Existencialismo Camusiano, Existencialismo Kierkegaardiano, Existencialismo Heideggeriano
-- Estoicismo Romano, Estoicismo Grego, Cinismo, Estoicismo Moderno
-- Niilismo Ativo, Niilismo Passivo, Niilismo Moral, Niilismo Epistemológico
-- Hedonismo Cirenaico, Epicurismo, Utilitarismo Hedonista, Eudemonismo
-=================================================
-Outra Árvore com 6 níveis de profundidade e 32 correntes filosóficas possíveis.
-"""
-
-# Dicionário com recomendações de livros para cada corrente filosófica
+# Dicionário com recomendações de livros para cada corrente filosófica:
 LIVROS_RECOMENDADOS = {
     "RACIONALISMO PLATONICO": [
         ("A República", "Platão", "Obra fundamental sobre justiça, política e teoria das Formas"),
@@ -340,7 +163,7 @@ LIVROS_RECOMENDADOS = {
     ],
 }
 
-# Explicação da estrutura hierárquica das perguntas
+# Explicação da estrutura hierárquica das perguntas:
 EXPLICACAO_ESTRUTURA = """
 ================================================================================
 ESTRUTURA DA ÁRVORE DE DECISÃO FILOSÓFICA - JUSTIFICATIVA DAS PERGUNTAS
@@ -380,25 +203,178 @@ NÍVEL 4 e 5 (Detalhamento Fino):
 ---------------------------------
 Distingue variantes dentro de cada escola filosófica principal.
 
-CÓDIGO DE CORES NA VISUALIZAÇÃO:
----------------------------------
-- AZUL: Racionalismo e vertentes (razão pura, ideias inatas)
-- VERDE: Empirismo e Positivismo (experiência, observação)
-- LARANJA: Pragmatismo (utilidade, consequências práticas)
-- AMARELO: Hedonismo e Eudemonismo (prazer, felicidade, virtude)
-- ROXO: Existencialismo (autenticidade, liberdade, angústia)
-- VERMELHO: Niilismo (ausência de valores objetivos)
-- CINZA: Outros (análise linguística, convenções)
-
 Esta estrutura permite uma classificação sistemática e progressivamente refinada
 das posições filosóficas, começando pelas questões mais fundamentais.
 ================================================================================
 """
+
+# Classe da implementação da árvore de decisão:
+class Tree:
+    """Classe que representa um nó de uma árvore de decisão binária,
+    Adotando 'Não' como direito e 'Sim' como esquerdo;"""
+    def __init__(self, value=None):
+        self.value = value
+        self.left = None
+        self.right = None
+
+    def add_left(self, value):
+        """Adiciona um filho à esquerda (Sim)."""
+        if isinstance(value, Tree):
+            self.left = value
+        else:
+            self.left = Tree(value)
+        return self.left
+    
+    def add_right(self, value):
+        """Adiciona um filho à direita (Não)."""
+        if isinstance(value, Tree):
+            self.right = value
+        else:
+            self.right = Tree(value)
+        return self.right
+    
+    def is_leaf(self):
+        """Verifica se o nó é uma folha (não tem filhos)."""
+        return (self.left is None and self.right is None)
+    
+    def sim(self):
+        """Retorna o filho esquerdo (Sim)."""
+        return self.left
+    
+    def nao(self):
+        """Retorna o filho direito (Não)."""
+        return self.right
+    
+    def from_list(nodes):
+        """Cria uma árvore a partir de uma lista em ordem de largura (BFS).
+        None representa ausência de nó.
+        
+        Exemplo:
+            nodes = ["Raiz", "Sim1", "Não1", "Sim2", None, "Não2", None]
+            Cria:
+                    Raiz
+                   /    \
+                Sim1    Não1
+                /         \
+              Sim2        Não2"""
+        
+        if not nodes or nodes[0] is None:
+            return None
+        root = Tree(nodes[0])
+        queue = deque([root])
+        i = 1
+        while queue and i < len(nodes):
+            current = queue.popleft()
+            # Adicionando filho esquerdo (Sim)
+            if i < len(nodes) and nodes[i] is not None:
+                current.left = Tree(nodes[i])
+                queue.append(current.left)
+            i += 1
+            # Adicionando filho direito (Não)
+            if i < len(nodes) and nodes[i] is not None:
+                current.right = Tree(nodes[i])
+                queue.append(current.right)
+            i += 1
+        return root
+    
+    def to_list(self):
+        """Converte a árvore para uma lista em ordem de largura (BFS);
+        Inclui None para posições vazias; Precisa salvar/restaurar 
+        a estrutura exata da árvore."""
+
+        if not self.value:
+            return []
+        result = []
+        queue = deque([self])
+        while queue:
+            current = queue.popleft()
+            if current:
+                result.append(current.value)
+                queue.append(current.left)
+                queue.append(current.right)
+            else:
+                result.append(None)
+        # Remove None's do final
+        while result and result[-1] is None:
+            result.pop()
+        return result
+    
+    def traverse_bfs(self):
+        """Retorna lista de valores em ordem de largura (BFS);
+        Precisa apenas listar/processar os nós existentes;"""
+
+        if not self.value:
+            return []
+        result = []
+        queue = deque([self])
+        while queue:
+            current = queue.popleft()
+            result.append(current.value)
+            if current.left:
+                queue.append(current.left)
+            if current.right:
+                queue.append(current.right)
+        return result
+    
+    def traverse_dfs_preorder(self):
+        """Retorna lista de valores em pré-ordem (DFS)."""
+
+        result = []
+        if self.value:
+            result.append(self.value)
+            if self.left:
+                result.extend(self.left.traverse_dfs_preorder())
+            if self.right:
+                result.extend(self.right.traverse_dfs_preorder())
+        return result
+    
+    def get_height(self):
+        """Retorna a altura da árvore."""
+
+        if self.is_leaf():
+            return 0
+        left_height = self.left.get_height() if self.left else 0
+        right_height = self.right.get_height() if self.right else 0
+        return 1 + max(left_height, right_height)
+    
+    def get_node_count(self):
+        """Retorna o número total de nós."""
+
+        count = 1
+        if self.left:
+            count += self.left.get_node_count()
+        if self.right:
+            count += self.right.get_node_count()
+        return count
+    
+    def find_node(self, value):
+        """Busca um nó pelo valor (BFS)."""
+
+        queue = deque([self])
+        while queue:
+            current = queue.popleft()
+            if current.value == value:
+                return current
+            if current.left:
+                queue.append(current.left)
+            if current.right:
+                queue.append(current.right)
+        return None
+    
+    def __str__(self):
+        """Representação em string da árvore."""
+
+        return f"Árvore(valores={self.value}, altura={self.get_height()}, nós={self.get_node_count()})"
+    
+    def __repr__(self):
+        """Retorna a representação em string da árvore."""
+
+        return self.__str__()
+    
 def criar_arvore_filosofia():
-    """
-    Cria a árvore de decisão para identificar tendências filosóficas.
-    Total de 32 resultados possíveis (2^5 = 32 folhas).
-    """
+    """Cria a árvore de decisão para identificar tendências filosóficas.
+    Total de 32 resultados possíveis (2^5 = 32 folhas)."""
+
     # Definindo a árvore usando o método from_list
     # None indica ausência de nó
     nodes = [
@@ -474,67 +450,11 @@ def criar_arvore_filosofia():
         "NIILISMO EPISTEMOLOGICO\nVocê duvida da possibilidade de conhecimento verdadeiro. Todas crenças são igualmente infundadas. Verdade objetiva é inacessível ou inexistente.",
     ]
     return Tree.from_list(nodes)
-def criar_arvore_filosofia_2():
-    """
-    Cria a árvore de decisão do fluxograma.
-    Cada nó tem filho esquerdo = "Sim" e filho direito = "Não".
-    None indica ausência de nó naquela posição.
-    """
-    nodes = [
-        # Nível 0 (Raiz)
-        "A vida tem sentido?",
-        # Nível 1
-        "O sentido vem de uma força maior?",                    # Sim (índice 1)
-        "O sentido da vida pode ser criado?",                    # Não (índice 2)
-        # Nível 2
-        "A fé é mais importante que a razão para entender o sentido da vida?",  # Sim/Sim (3)
-        "A moral é guiada por princípios ao invés de consequências práticas?",  # Sim/Não (4)
-        "O sentido é algo criado por cada um?",                              # Não/Sim (5)
-        "A falta de sentido leva ao completo vazio?",                         # Não/Não (6)
-        # Nível 3
-        "Teísmo/Escolástica",                                               # 7 (filho esquerdo de 3)
-        "A razão humana é suficiente para entender o sentido da vida?",     # 8 (filho direito de 3)
-        "Kantianismo",                                                       # 9 (filho esquerdo de 4)
-        "O bem está em alcançar a virtude e o equilíbrio acima de seguir regras fixas?",  #10 (filho direito de 4)
-        "A liberdade e a autenticidade são os valores supremos?",            #11 (filho esquerdo de 5)
-        "O bem é avaliado com base na felicidade coletiva?",                 #12 (filho direito de 5)
-        "Niilismo",                                                          #13 (filho esquerdo de 6)
-        "Mesmo assim, é possível criar valores por pura vontade individual?",#14 (filho direito de 6)
-        # Nível 4
-        None, None,  # filhos de 7 (Teísmo é folha)
-        "Deísmo", "Idealismo",  # filhos de 8 (razão suficiente? -> Deísmo / Idealismo)
-        None, None,  # filhos de 9 (Kantianismo é folha)
-        "Ética das Virtudes", "Humanismo Clássico",  # filhos de 10
-        "Existencialismo", "Humanismo Secular",      # filhos de 11
-        "Utilitarismo",                              # filho esquerdo de 12
-        "O indivíduo deve tentar transformar o mundo pela ação social?",  # filho direito de 12
-        None, None,  # filhos de 13 (Niilismo é folha)
-        "Nietzsche", "Devemos então suspender o sentido?",  # filhos de 14
-        # Nível 5 (folhas e próximos ramos)
-        # filhos de "Deísmo" e "Idealismo" (7.. indices já ocupados acima)
-        # (manter None quando não houver)
-        # preenchendo posições na ordem de nível para manter estrutura legível
-        # (continuando em sequência)
-        # filhos de "O indivíduo deve tentar transformar..." (marxismo/pragmatismo)
-        None, None, None, None, None, None, None, None,  # espaços reservados para alinhamento
-        "Marxismo", "Pragmatismo",  # filhos (Sim/Não) de "O indivíduo deve tentar transformar..."
-        None, None,  # possíveis posições vazias
-        "Ceticismo", "Tudo o que existe é material?",  # filhos de "Devemos então suspender o sentido?"
-        # nível final: filhos de "Tudo o que existe é material?"
-        "Empirismo", "Idealismo",  # se "Tudo o que existe é material?" => Sim: Empirismo; Não: Idealismo
-    ]
-
-    # Ajuste final: caso a sua implementação de Tree.from_list espere uma lista de tamanho específico
-    # com None onde não há nós, este `nodes` já usa None para indicar ausências. 
-    # Se for necessário, acrescente mais Nones ao final para igualar comprimento fixo.
-    return Tree.from_list(nodes)
-
 
 def fazer_questionario_interativo(arvore):
-    """
-    Percorre a árvore interativamente, 
-    fazendo perguntas e navegando baseado nas respostas do usuário.
-    """
+    """Percorre a árvore interativamente, fazendo perguntas 
+    e navegando baseado nas respostas do usuário."""
+
     print("\n" + "=" * 80)
     print("DESCUBRA SUA CORRENTE FILOSOFICA - ANALISE DETALHADA")
     print("=" * 80)
@@ -608,12 +528,9 @@ def fazer_questionario_interativo(arvore):
     print()
     return nodo_atual.value
 
-
-
 def mostrar_info_arvore(arvore):
-    """
-    Exibe informações sobre a estrutura da árvore.
-    """
+    """Exibe informações sobre a estrutura da árvore."""
+
     print("\n" + "=" * 80)
     print("INFORMACOES DA ESTRUTURA DA ARVORE")
     print("=" * 80)
@@ -628,10 +545,10 @@ def mostrar_info_arvore(arvore):
     print(f"  Raiz: {lista_completa[0][:50]}...")
     print(f"  Total de elementos na lista: {len(lista_completa)}")
     print("=" * 80 + "\n")
+
 def mostrar_estatisticas_detalhadas(arvore):
-    """
-    Mostra estatísticas detalhadas sobre a árvore e suas correntes.
-    """
+    """Mostra estatísticas detalhadas sobre a árvore e suas correntes."""
+
     print("\n" + "=" * 80)
     print("ESTATISTICAS DETALHADAS")
     print("=" * 80)
@@ -685,23 +602,19 @@ def mostrar_estatisticas_detalhadas(arvore):
     
     print("=" * 80 + "\n")
 
-
 def menu_principal():
-    """
-    Menu interativo para o usuário escolher o que fazer.
-    """
-    arvore = criar_arvore_filosofia() # Ou criar_arvore_filosofia_2()
+    """Menu interativo para o usuário escolher o que fazer."""
+    arvore = criar_arvore_filosofia()
     
     while True:
         print("\n" + "=" * 80)
         print("ARVORE DE DECISAO FILOSOFICA COMPLEXA - MENU PRINCIPAL")
         print("=" * 80)
         print("\n1. Fazer o questionario interativo (6 niveis de perguntas)")
-        print("2. Visualizar a arvore completa graficamente (com cores por area)")
+        print("2. Mostrar informacoes sobre a estrutura da arvore")
         print("3. Ver informacoes sobre a estrutura da arvore")
-        print("4. Ver estatisticas detalhadas das correntes")
-        print("5. Ver explicacao da hierarquia de perguntas")
-        print("6. Sair")
+        print("4. Ver explicacao da hierarquia de perguntas")
+        print("5. Sair do menu")
         
         escolha = input("\n>>> Escolha uma opcao (1-5): ").strip()
         
