@@ -18,7 +18,7 @@ help:
 	@echo ""
 	@echo "$(GREEN)Comandos Disponíveis:$(NC)"
 	@echo ""
-	@echo "  $(YELLOW)make install$(NC)          - Instala todas as dependências"
+	@echo "  $(YELLOW)make install$(NC)          - Instala todas as dependências (roda no run.sh)"
 	@echo "  $(YELLOW)make part1$(NC)            - Executa Parte 1 (Árvore Manual Filosófica)"
 	@echo "  $(YELLOW)make part2$(NC)            - Executa Parte 2 completa (ML: pré-proc + treinos)"
 	@echo "  $(YELLOW)make part2-preprocess$(NC) - Apenas pré-processamento dos dados"

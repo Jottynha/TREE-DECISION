@@ -4,10 +4,10 @@
 
 ![Python](https://img.shields.io/badge/python-blue?style=for-the-badge&logo=python&logoColor=white)
 ![VS Code](https://img.shields.io/badge/visual%20studio%20code-blue?style=for-the-badge)
-
+![Ubuntu](https://img.shields.io/badge/ubuntu-orange?style=for-the-badge&logo=ubuntu&logoColor=white)
 
 📖:
- [Visão Geral](#visão-geral) |
+[Visão Geral](#visão-geral) |
 [Como reproduzir](#como-reproduzir) |
 [Decisões Técnicas](#decisões-técnicas)
 
@@ -135,7 +135,16 @@ Este projeto explora **Árvores de Decisão** de duas formas:
 
 ### Instalação Rápida
 
-#### Usando Makefile (Recomendado)
+#### Usando run.sh (Linux):
+```bash
+# Concede permissões de execução:
+chmod +x run.sh
+
+# Cria .venv e baixa depenências nele:
+./run.sh
+```
+
+#### Usando Makefile (Alternativa):
 
 ```bash
 # Instalar dependências
@@ -217,9 +226,6 @@ import numpy as np     # Operações matemáticas rápidas
 
 ```bash
 make part1
-# OU
-cd src/part1_tree_manual
-python3 tree_manual.py
 ```
 
 #### O que faz
@@ -261,13 +267,14 @@ Nível 6: Estética (Objetividade vs Subjetividade)
 #### Execução Completa
 
 ```bash
+# Execução de todas os algoritmos:
 make part2
-# OU manualmente:
-cd src/part2_ml
-python3 preprocess.py    # Pré-processamento
-python3 train_tree.py    # Decision Tree
-python3 train_knn.py     # KNN
-python3 train_svm.py     # SVM
+
+# Execução individual dos algoritmos:
+make part2-preprocess
+make part2-dt
+make part2-knn
+make part2-svm
 ```
 
 ---
@@ -468,9 +475,6 @@ metrics = {
 
 ```bash
 make part3
-# OU
-cd src/part3_ga
-python3 ga.py
 ```
 
 *(Implementação e decisões técnicas serão adicionadas)*
