@@ -114,6 +114,29 @@ def print_terminal(i, lista_genes, lista_fitness):
     print(lista_genes, "\n")
     print(lista_fitness, "\n")
 
+def elitismo(lista_genes, lista_fitness, lista_filhos):
+    """Salva os dois maiores valores da geração anterior nos filhos da atual,
+    se os dois maiores tiverem um fitness maior que 0."""
+    lista_fitness_aux = lista_fitness
+    
+    fitness_max = max(lista_fitness_aux)
+    fitness_max_index = lista_fitness_aux.index(fitness_max)
+    lista_fitness_aux.remove(fitness_max)
+
+    fitness_max_2 = max(lista_fitness_aux)
+    fitness_max2_index = lista_fitness_aux.index(fitness_max_2)
+
+    melhor_gene_1 = lista_genes[fitness_max_index]
+    melhor_gene_2 = lista_genes[fitness_max2_index]
+
+    if (fitness_max > 0 and fitness_max_2 > 0):
+        lista_filhos.append(melhor_gene_1)
+        lista_filhos.append(melhor_gene_2)
+        return True
+    else:
+        return False
+
+
 if __name__ == '__main__':
     # Variáveis da geração de itens:
     numItens       = 10 
@@ -141,11 +164,18 @@ if __name__ == '__main__':
         lista_fitness       = gerar_lista_fitness(lista_genes, pesoMochila)
         porcentagensRoleta  = porcentagens(lista_fitness)
 
-        #print_terminal(i, lista_genes, lista_fitness) # Opcional
-
         # Geração de pais e filhos:
         lista_filhos = []
-        for _ in range(int((tamPopulacao/2))):
+        num_casais = 0
+
+        # Aplica o elitismo antes de gerar pais e filhos:
+        if elitismo(lista_genes, lista_fitness, lista_filhos) == True:
+            num_casais = int((tamPopulacao/2) - 1)
+        else:
+            num_casais = int(tamPopulacao/2)
+
+        # Gera pais e filhos:
+        for _ in range(num_casais):
             pai1 = gerar_pai(lista_genes, porcentagensRoleta)
             pai2 = gerar_pai(lista_genes, porcentagensRoleta)
             filho1, filho2 = gerar_filhos(pai1, pai2)
