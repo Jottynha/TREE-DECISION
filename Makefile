@@ -2,7 +2,7 @@
 # =====================================
 # Automatiza execução de todas as partes do projeto
 
-.PHONY: help install clean part1 part2 part2-preprocess part2-dt part2-knn part2-svm part2-all part3 results
+.PHONY: help install clean part1 part2 part2-preprocess part2-dt part2-knn part2-svm part2-all part3 part4 part4-aco results
 
 # Cores para output
 BLUE := \033[0;34m
@@ -26,6 +26,8 @@ help:
 	@echo "  $(YELLOW)make part2-knn$(NC)        - Treina apenas KNN"
 	@echo "  $(YELLOW)make part2-svm$(NC)        - Treina apenas SVM"
 	@echo "  $(YELLOW)make part3$(NC)            - Executa Parte 3 (Algoritmo Genético)"
+	@echo "  $(YELLOW)make part4$(NC)            - Executa Parte 4 (Enxame e Imunes)"
+	@echo "  $(YELLOW)make part4-aco$(NC)        - Executa ACO (Knapsack Problem)"
 	@echo "  $(YELLOW)make results$(NC)          - Exibe relatório de resultados"
 	@echo "  $(YELLOW)make clean$(NC)            - Remove arquivos processados e modelos"
 	@echo ""
@@ -103,6 +105,22 @@ part3:
 	@echo "$(GREEN)✓ Parte 3 concluída!$(NC)"
 
 # ============================================================
+# PARTE 4: ENXAME E IMUNES
+# ============================================================
+
+part4-aco:
+	@echo "$(BLUE)═══════════════════════════════════════════════════════════════$(NC)"
+	@echo "$(BLUE)║  PARTE 4: ACO (ANT COLONY OPTIMIZATION) - KNAPSACK          ║$(NC)"
+	@echo "$(BLUE)═══════════════════════════════════════════════════════════════$(NC)"
+	@python3 src/part4_swarm_immune/aco.py
+	@echo "$(GREEN)✓ ACO concluído!$(NC)"
+
+part4: part4-aco
+	@echo "$(BLUE)═══════════════════════════════════════════════════════════════$(NC)"
+	@echo "$(GREEN)✓ PARTE 4 CONCLUÍDA COM SUCESSO!$(NC)"
+	@echo "$(BLUE)═══════════════════════════════════════════════════════════════$(NC)"
+
+# ============================================================
 # VISUALIZAÇÃO DE RESULTADOS
 # ============================================================
 
@@ -138,7 +156,7 @@ clean:
 # EXECUÇÃO COMPLETA (TODAS AS PARTES)
 # ============================================================
 
-all: part1 part2 part3
+all: part1 part2 part3 part4
 	@echo "$(BLUE)═══════════════════════════════════════════════════════════════$(NC)"
 	@echo "$(GREEN)✓✓✓ TRABALHO COMPLETO EXECUTADO COM SUCESSO! ✓✓✓$(NC)"
 	@echo "$(BLUE)═══════════════════════════════════════════════════════════════$(NC)"
