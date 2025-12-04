@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 def gerar_itens(numItens, pesoMax, valorMax):
     """Gera uma lista de itens com base em quantidade, peso máximo e valor máximo."""
+    random.seed(42) # Seed de geração aletaória
     listaItens = []
     for _ in range(numItens):
         pesoItem = random.randint(1,pesoMax)
