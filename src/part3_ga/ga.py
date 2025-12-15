@@ -120,7 +120,7 @@ class GA:
         plt.title('Resultados do AG para o Knapsack 0/1')
         plt.grid(True)
         plt.show()
-
+         
     def print_terminal(self, i, lista_genes, lista_fitness):
         print("Geração: ", i)
         print(lista_genes, "\n")
