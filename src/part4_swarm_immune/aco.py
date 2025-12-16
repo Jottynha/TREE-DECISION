@@ -34,6 +34,8 @@ class KnapsackACO:
         self.heuristic = np.array([item.efficiency for item in items])
         self.best_values_history = []
         self.avg_values_history = []
+        self.diversity_history = []
+        self.diversity_history = []
 
     def construct_solution(self) -> Tuple[List[int], int, int]:
         solution, total_value, total_weight = [], 0, 0
@@ -74,17 +76,24 @@ class KnapsackACO:
                 best_solution, best_value, best_weight = best_iter
             
             self.pheromone *= (1 - self.rho)
-            for sol, val, _ in solutions:
-                deposit = self.Q * val / self.capacity
+            # Depositar feromônio apenas nas top 30% soluções (elitismo)
+            solutions_sorted = sorted(solutions, key=lambda x: x[1], reverse=True)
+            n_elite = max(1, int(0.3 * len(solutions)))
+            for sol, val, _ in solutions_sorted[:n_elite]:
+                deposit = self.Q * val / (self.capacity * n_elite)  # Normalizar
                 for item_id in sol:
                     self.pheromone[item_id] += deposit
             
+            diversity = len(set(tuple(sorted(sol)) for sol, _, _ in solutions))
             self.best_values_history.append(best_value)
             self.avg_values_history.append(np.mean(values))
+            self.diversity_history.append(diversity)
             
             if verbose and (iteration + 1) % 20 == 0:
+                diversity = len(set(tuple(sol) for sol, _, _ in solutions))
                 print(f"Iteração {iteration+1}/{self.n_iterations} | Melhor: {best_value} | "
-                      f"Médio: {np.mean(values):.1f} | Tempo: {time.time()-start_time:.2f}s")
+                      f"Médio: {np.mean(values):.1f} | Diversidade: {diversity}/{self.n_ants} | "
+                      f"Tempo: {time.time()-start_time:.2f}s")
         
         if verbose:
             print(f"\n{'='*70}\nRESULTADO FINAL ACO\n{'='*70}")
