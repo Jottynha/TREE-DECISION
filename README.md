@@ -28,6 +28,7 @@ O trabalho foi dividido em quatro partes:
 - Parte 3 - Algoritmo Genético (AG)
 - Parte 4 - Enxame e Imunes
 
+<!--
 ### Estrutura do Repositório:
 ```
 TRABALHO PRÁTICO IA/
@@ -76,7 +77,7 @@ TRABALHO PRÁTICO IA/
     └───part3_ga
             ga.py
 ```
-
+-->
 <!--
 ```
 TREE-DECISION/
@@ -473,13 +474,46 @@ metrics = {
 
 ### **Parte 3: Algoritmo Genético**
 
+#### Execução no terminal:
 ```bash
 make part3
 ```
 
-*(Implementação e decisões técnicas serão adicionadas)*
+#### Decisões de implementação:
+- **Problema implementado:** Knapsack 0/1 (Problema da Mochila);
+- Foi utilizada a semente aleatória `random.seed(42)` para padronizar a geração de itens;
+- A codificação na geração de itens foi feita em uma lista de tuplas, em que o primeiro número da tupla armazena o peso do item e o segundo número armazena o valor do item (_fitness_). Isso também é imprimido no terminal da seguinte forma:
+```
+[(1, 1), (3, 4), (2, 3), (1, 2), (5, 7), (1, 1), (1, 4), (2, 1), (5, 4), (5, 7)] 
+```
 
----
+- A codificação dos genes é feita de forma binária, com base no índice da lista de itens do problema. No caso, um gene é uma lista do tamanho do número de itens, em que 1 indica que o item foi selecionado para entrar na mochila e 0 indica que o item não foi selecionado, como pode ser visto a seguir:
+
+```
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+```
+
+- O problema foi parametrizado com base nos seguintes parâmetros e valores padrão para execução:
+
+| Parâmetros | Valores |
+|------------|---------|
+| Número de itens | 10 |
+| Peso máximo por item | 5 |
+| Valor máximo por item | 8 |
+| Peso máximo da mochila | 10 |
+| Tamanho da população | 400 |
+| Número de gerações | 1000 |
+| Taxa inicial de mutação | 1% |
+| Taxa variável de mutação | 5% | 
+
+- O fitness de um gene é calculado com base na soma dos valores dos itens no gene quando a soma dos pesos dos itens do gene é menor ou
+igual ao limite de peso da mochila. Caso contrário, o fitness é zerado.
+
+- A implementação conta com operadores característicos do algoritmo genético:
+  - _Elitismo:_ Permite no código com que ma que os dois genes com maior fitness de
+  uma geração sejam preservados para a próxima geração, desde que ambos possuam fitness maior que zero.
+  - _Seleção de Pais por roleta:_ Cada gene recebe uma porcentagem com base em seu fitness, que dita a chance de que ele se torne pai através da roleta viciada (sem contar com o elitismo).
+  - _Taxa de mutação variável:_ Após 50 gerações, a taxa de mutação sobe de 1% para 5%, a fim de garantir movimentações bem-vindas na diversidade genética dos genes disponíveis após esse momento.
 
 ## Resultados e Comparações
 
